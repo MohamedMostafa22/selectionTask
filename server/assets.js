@@ -10,13 +10,14 @@ exports.splitIntoTrips = trackingHistory => {
     let lastIndex = 0;
     trackingHistory.forEach((point, index) => {
       if (point.time) {
-        if (new Date(lastTime) - new Date(point.time) >= INTERVAL) {
+        if (getDate(lastTime) - getDate(point.time) >= INTERVAL) {
           trips.push(trackingHistory.slice(lastIndex, index));
           lastIndex = index;
         }
         lastTime = point.time;
       }
     });
+    trips.push(trackingHistory.slice(lastIndex));
     return trips;
   }
   return trackingHistory;
