@@ -1,5 +1,5 @@
 const express = require("express");
-const { splitIntoTrips } = require("./assets");
+const { splitIntoTrips, getPointByDate } = require("./assets");
 
 const app = express();
 
@@ -15,14 +15,13 @@ app.use((req, res, next) => {
 const exampleData = require("../data/tracking.json");
 
 app.get("/", (req, res) => {
-  // TODO(Task 1): Split tracking data into trip segments for example by using the time property.
   tripsData = splitIntoTrips(exampleData);
   res.send(tripsData);
 });
 
 app.get("/location/:when", (req, res) => {
-  // TODO(Task 2): Return the tracking data closest to `req.params.when` from `exampleData`.
-  res.send({});
+  const point = getPointByDate(exampleData, req.params.when);
+  res.send(point);
 });
 
 app.listen(3000, () => console.log("Example app listening on port 3000!"));

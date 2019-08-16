@@ -9,6 +9,7 @@ const getRouteSummary = locations => {
   );
   return `${from} - ${to}`;
 };
+
 const getRandomColor = () => {
   var letters = "0123456789ABCDEF";
   var color = "#";
@@ -18,18 +19,8 @@ const getRandomColor = () => {
   return color;
 };
 
-const MapComponent = () => {
+const MapComponent = ({ locations, point }) => {
   const map = useRef();
-  const [locations, setLocations] = useState();
-  // Request location data.
-  useEffect(() => {
-    fetch("http://localhost:3000")
-      .then(response => response.json())
-      .then(json => {
-        setLocations(json);
-      });
-  }, []);
-  // TODO(Task 2): Request location closest to specified datetime from the back-end.
 
   // Initialize map.
   useEffect(() => {
@@ -45,12 +36,12 @@ const MapComponent = () => {
     map.current.setView(new L.LatLng(52.51, 13.4), 9);
     map.current.addLayer(osm);
   }, []);
+
   // Update location data on map.
   useEffect(() => {
     if (!map.current || !locations) {
       return; // If map or locations not loaded yet.
     }
-    // TODO(Task 1): Replace the single red polyline by the different segments on the map.
     const polylines = [];
     Array.isArray(locations) &&
       locations.forEach(trip => {
@@ -63,7 +54,13 @@ const MapComponent = () => {
     polylines.forEach(line => map.current.fitBounds(line.getBounds()));
     return () => polylines.forEach(line => map.current.remove(line));
   }, [locations, map.current]);
-  // TODO(Task 2): Display location that the back-end returned on the map as a marker.
+
+  useEffect(() => {
+    if (!map.current || !locations || !point) return;
+    const marker = new L.marker([point.lat, point.lon]);
+    marker.addTo(map.current);
+    return () => map.current.removeLayer(marker);
+  });
 
   return (
     <div>
